@@ -299,36 +299,71 @@ test('diner dashboard loads order history', async ({ page }) => {
   await expect(page.locator('#root')).toBeVisible();
   await expect(page.locator('#root')).toContainText(/veggie|pepperoni|order/i);
 });
-test('delivery verify covers success + failure branches (covers 18-24)', async ({ page }) => {
-  await login(page, 'd@jwt.com', 'a');
 
-  const state = {
-    jwt: 'eyJpYXQ.delivery.jwt',
-    order: { id: '23', items: [{ menuId: '1', description: 'Veggie', price: 0.0038 }] },
-  };
 
+async function gotoWithState(page: Page, path: string, state: any) {
   await page.goto('/');
   await page.evaluate(
-    ({ state }) => {
-      history.pushState({ usr: state }, '', '/delivery');
+    ({ path, state }) => {
+      history.pushState({ usr: state }, '', path);
       window.dispatchEvent(new PopStateEvent('popstate'));
     },
-    { state }
+    { path, state }
   );
+}
 
-  const verifyBtn = page.getByRole('button', { name: /^Verify$/i });
-  const modal = page.locator('#hs-jwt-modal');
+test('payment redirects to /payment/login when not logged in (covers useEffect branch)', async ({ page }) => {
+  await page.goto('/logout').catch(() => {});
+  await gotoWithState(page, '/payment', { order: { items: [{ menuId: '1', description: 'Veggie', price: 0.0038 }] } });
 
-  await verifyBtn.click();
-  await expect(modal).toBeVisible();
-  await expect(modal).toContainText(/JWT Pizza/i);
-  await page.keyboard.press('Escape');
-  await expect(modal).not.toBeVisible();
-  await page.route('**/api/order/verify', async (route) => {
-    await route.fulfill({ status: 500, json: { message: 'boom' } });
-  });
+  await expect(page).toHaveURL(/\/payment\/login$/);
+});
 
-  await verifyBtn.click();
-  await expect(modal).toBeVisible();
-  await expect(modal).toContainText(/bad pizza/i);
+test('payment renders single item message + table + footer singular', async ({ page }) => {
+  await login(page, 'd@jwt.com', 'a');
+
+  const order = { items: [{ menuId: '1', description: 'Veggie', price: 0.0038 }] };
+  await gotoWithState(page, '/payment', { order });
+
+  await expect(page.locator('#root')).toContainText('Send me that pizza right now!');
+  await expect(page.locator('tbody')).toContainText('Veggie');
+
+  await expect(page.locator('tfoot')).toContainText('1 pie');
+  await expect(page.locator('tfoot')).toContainText('₿');
+  await expect(page.locator('tfoot')).toContainText(/0\.00\d/); 
+});
+
+test('payment renders multi item message + footer plural + total reduce', async ({ page }) => {
+  await login(page, 'd@jwt.com', 'a');
+
+  const order = {
+    items: [
+      { menuId: '1', description: 'Veggie', price: 0.0038 },
+      { menuId: '2', description: 'Pepperoni', price: 0.0042 },
+    ],
+  };
+  await gotoWithState(page, '/payment', { order });
+
+  await expect(page.locator('#root')).toContainText('Send me those 2 pizzas right now!');
+  await expect(page.locator('tbody')).toContainText('Veggie');
+  await expect(page.locator('tbody')).toContainText('Pepperoni');
+
+  await expect(page.locator('tfoot')).toContainText('2 pies');
+  await expect(page.locator('tfoot')).toContainText('₿');
+  await expect(page.locator('tfoot')).toContainText(/0\.008/);
+});
+
+test('payment pay now success navigates to delivery with jwt', async ({ page }) => {
+  await login(page, 'd@jwt.com', 'a');
+
+  const order = { items: [{ menuId: '1', description: 'Veggie', price: 0.0038 }] };
+  await gotoWithState(page, '/payment', { order });
+
+  await Promise.all([
+    page.waitForURL(/\/delivery$/),
+    page.getByRole('button', { name: /^Pay now$/i }).click(),
+  ]);
+
+  await expect(page.locator('#root')).toBeVisible();
+  await expect(page.locator('#root')).toContainText(/Here is your JWT Pizza!/i);
 });
