@@ -44,13 +44,11 @@ jobs:
         run: |
           coverage=$(jq -r '.total.lines.pct' coverage/coverage-summary.json)
           coverage=$(printf "%.2f" "$coverage")
-
-          color=$(awk -v c="$coverage" 'BEGIN {if (c < 80) print "red"; else print "green"}')
+          color=$(awk -v c="$coverage" 'BEGIN {print (c < 80) ? "red" : "green"}')
 
           curl -s -X POST \
             "https://pizza-factory.cs329.click/api/badge/${{ secrets.NET_ID }}/jwtpizzacoverage?label=Coverage&value=${coverage}%25&color=${color}" \
             -H "authorization: bearer ${{ secrets.FACTORY_API_KEY }}"
-
   deploy:
     needs: build
     permissions:
