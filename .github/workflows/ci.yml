@@ -41,10 +41,16 @@ jobs:
           npx playwright install --with-deps chromium
           npm run test:coverage
       - name: Update coverage
-        run: |
-          coverage=$(jq '.total.lines.pct' coverage/coverage-summary.json)
-          color=$(echo "$coverage < 80" | bc | awk '{if ($1) print "red"; else print "green"}')
-          curl -s -X POST "https://pizza-factory.cs329.click/api/badge/${{ secrets.NET_ID }}/jwtpizzacoverage?label=Coverage&value=$coverage%25&color=$color" -H "authorization: ${{ secrets.FACTORY_API_KEY }}"
+  run: |
+    coverage=$(jq -r '.total.lines.pct' coverage/coverage-summary.json)
+    coverage=$(printf "%.2f" "$coverage")
+
+    color=$(awk -v c="$coverage" 'BEGIN {if (c < 80) print "red"; else print "green"}')
+
+    curl -s -X POST \
+      "https://pizza-factory.cs329.click/api/badge/${{ secrets.NET_ID }}/jwtpizzacoverage?label=Coverage&value=${coverage}%25&color=${color}" \
+      -H "authorization: bearer ${{ secrets.FACTORY_API_KEY }}"
+
   deploy:
     needs: build
     permissions:
