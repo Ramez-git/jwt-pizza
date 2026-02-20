@@ -45,23 +45,13 @@ class HttpPizzaService implements PizzaService {
 async getUsers(page: number = 1): Promise<{users: User[], more: boolean}> {
   return this.callEndpoint(`/api/user?page=${page}`, 'GET');
 }
-async listUsers(page: number, limit: number, name: string): Promise<{ users: User[]; more: boolean }> {
-  const qs = new URLSearchParams({
-    page: String(page),
-    limit: String(limit),
-    name: name && name.length > 0 ? name : '*',
-  });
+async listUsers(page: number = 1, limit: number = 10, nameFilter: string = '*'): Promise<UserList> {
+    return this.callEndpoint(`/api/user?page=${page}&limit=${limit}&name=${nameFilter}`, 'GET');
+  }
 
-  const res = await this.callEndpoint(`/api/user?${qs.toString()}`, 'GET');
-  return Promise.resolve(res);
-}
-
-async deleteUser(userId: number): Promise<void> {
-  await this.callEndpoint(`/api/user/${userId}`, 'DELETE');
-  return Promise.resolve();
-}
-
-
+  async deleteUser(userId: string): Promise<void> {
+    return this.callEndpoint(`/api/user/${userId}`, 'DELETE');
+  }
 
   async login(email: string, password: string): Promise<User> {
     const { user, token } = await this.callEndpoint('/api/auth', 'PUT', { email, password });
@@ -143,6 +133,8 @@ async deleteUser(userId: number): Promise<void> {
   localStorage.setItem('token', token);
   return Promise.resolve(user);
 }
+
+
 }
 
 const httpPizzaService = new HttpPizzaService();

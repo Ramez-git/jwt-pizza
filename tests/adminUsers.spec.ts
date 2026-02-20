@@ -47,6 +47,21 @@ test('admin list users + filter + pagination + delete', async ({ page }) => {
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ message: 'deleted' }) });
   });
 
+    await page.route('**/api/auth', async (route) => {
+        if (route.request().method() === 'PUT') {
+        await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+            user: { id: 1, name: 'Alpha Admin', email: 'a@jwt.com', roles: [{ role: 'admin' }] },
+            token: 'fake-jwt-token'
+            }),
+        });
+        } else {
+        route.fallback();
+        }
+    });
+
   await page.goto('/');
   await page.getByRole('link', { name: 'Login' }).click();
   await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');

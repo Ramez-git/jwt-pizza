@@ -69,10 +69,6 @@ async function updateUser() {
       document.body.classList.remove('overflow-hidden');
     }
 
-    setTimeout(() => {
-      window.location.reload();
-    }, 200);
-
   } catch (error) {
     console.log("Update handled. Refreshing...");
     window.location.reload();
