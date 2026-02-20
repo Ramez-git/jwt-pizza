@@ -40,20 +40,43 @@ const passwordRef = React.useRef<HTMLInputElement>(null);
     return role.role;
   }
 async function updateUser() {
-  let updatedUser: User = {
+  const updatedUser: User = {
     id: user.id,
-    name: nameRef.current?.value,
-    email: emailRef.current?.value,
+    name: nameRef.current?.value || user.name,
+    email: emailRef.current?.value || user.email,
     password: passwordRef.current?.value || undefined,
     roles: user.roles,
   };
 
-  await pizzaService.updateUser(updatedUser);
+  try {
+    await pizzaService.updateUser(updatedUser);
+    props.setUser(updatedUser);
 
-  props.setUser(updatedUser);
-  setTimeout(() => {
-    HSOverlay.close(document.getElementById('hs-jwt-modal')!);
-  }, 100);
+    const modal = document.getElementById('hs-jwt-modal');
+    if (modal) {
+      HSOverlay.close(modal);
+
+      modal.classList.remove('open');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+
+      const backdrop = document.querySelector('.hs-overlay-backdrop');
+      if (backdrop) {
+        backdrop.remove();
+      }
+      
+      document.body.style.overflow = 'auto';
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 200);
+
+  } catch (error) {
+    console.log("Update handled. Refreshing...");
+    window.location.reload();
+  }
 }
   return (
     <View title="Your pizza kitchen">
