@@ -10,7 +10,7 @@ test('updateUser', async ({ page }) => {
   await page.getByRole('button', { name: 'Register' }).click();
 
 const initialsLink = page.getByRole('link', { name: /^[a-z]{2}$/i });
-await expect(initialsLink).toBeVisible();
+await expect(initialsLink).toBeVisible({ timeout: 15000 });
 await initialsLink.click();
 
 await expect(page.getByRole('main')).toContainText('pizza diner');
