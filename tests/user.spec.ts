@@ -9,10 +9,12 @@ test('updateUser', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Password' }).fill('diner');
   await page.getByRole('button', { name: 'Register' }).click();
 
-  await page.getByRole('link', { name: 'pd' }).click();
+const initialsLink = page.getByRole('link', { name: /^[a-z]{2}$/i });
+await expect(initialsLink).toBeVisible();
+await initialsLink.click();
 
-  await expect(page.getByRole('main')).toContainText('pizza diner');
-  await page.getByRole('button', { name: 'Edit' }).click();
+await expect(page.getByRole('main')).toContainText('pizza diner');
+await page.getByRole('button', { name: 'Edit' }).click();
 await expect(page.locator('h3')).toContainText('Edit user');
 await page.getByRole('button', { name: 'Update' }).click();
 
