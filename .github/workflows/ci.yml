@@ -62,6 +62,7 @@ jobs:
             audience: sts.amazonaws.com
             aws-region: us-east-1
             role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/${{ secrets.CI_IAM_ROLE }}
+            role-skip-session-tagging: true
 
         - name: Verify AWS CLI
           run: aws --version
