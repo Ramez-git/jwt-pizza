@@ -253,13 +253,8 @@ franchiseRouter.get('/:userId', authRouter.authenticateToken,
 
 
 # Peer attacks
-
-## self attacks
-
-
-
-## Attack on peer
-### Peer attack 1 — Unauthenticated Franchise Delete 
+## Attack on the peer website 
+### Peer attack 1
 
 | Item | Result |
 | --- | --- |
@@ -306,11 +301,61 @@ franchiseRouter.delete(
   })
 );
 ```
+### Peer Attack 2
+
+| Item | Result |
+| :--- | :--- |
+| Date | April 11, 2026 |
+| Target | Insert a wrong description in the pizza order to get location of the files |
+| Classification | Injection |
+| Severity | 3 |
+| Description | There was a direct description of where the files were located and now the intruder has the files information, possibly finding more vulnerabilities |
+| Images | <img src="./attackfiles.jpeg" width="1000"><br>description. |
+| Corrections | He will fix the error handling
+
+
+### Peer Attack 3
+
+| Item | Result |
+| :--- | :--- |
+| Date | April 11, 2026 |
+| Target | website |
+| Classification | Get user data without authorization token |
+| Severity | 0 |
+| Description | It didn't work! He successfully protected usersData endpoint |
+| Images | <img src="users.png" width="1000"><br>description. |
+| Corrections | No need |
+
+### Peer Attack 4
+
+| Item | Result |
+| :--- | :--- |
+| Date | April 11, 2026 |
+| Target | Registration Breaking |
+| Classification | Error handling while registering |
+| Severity | 3 |
+| Description | When sending invalid JSON, the server returns a full error message with a with multiple files locations
+| Images | <img src="json.png" width="1000"><br>Server response showing stack trace and error message. |
+| Corrections | There needs to be an error handler to hide this information|
+
+
+
+### Peer Attack 5
+
+| Item | Result |
+| :--- | :--- |
+| Date | April 11, 2026 |
+| Target | Price changes when ordering a pizza, and even the names |
+| Classification | Injection |
+| Severity | 5 |
+| Description | The price was changed and the pizza was registered as successful, possibly having the franchisees lose money. |
+| Images | <img src="./attackprice.jpeg" width="1000"><br>description. |
+| Corrections | He planned to create a check on the orderRouter prices, I explained what I did, so he will fix it similarly.
 
 ## Peer Attacks on my website
 
 ---
-
+#### Attack 1 
 | Item | Result |
 | :--- | :--- |
 | Date | April 10, 2026 |
@@ -377,6 +422,57 @@ const orderReq = req.body;
 ```
 
 > this code fixes the bug by requesting the franchise list, to make sure that when the order is made a valid franchiseID is used, and valid order in the menu is used.
+
+### Attack 2
+
+| Item | Result |
+| :--- | :--- |
+| Date | April 11, 2026 |
+| Target | Insert a wrong description in the pizza order to get location of the files |
+| Classification | Injection |
+| Severity | 3 |
+| Description | There was a direct description of where the files were located and now the intruder has the files information, possibly finding more vulnerabilities |
+| Images | <img src="./attackfiles.jpeg" width="1000"><br>description. |
+| Corrections | He will fix the error handling
+
+
+### Attack 3
+
+| Item | Result |
+| :--- | :--- |
+| Date | April 11, 2026 |
+| Target | website |
+| Classification | Get user data without authorization token |
+| Severity | 0 |
+| Description | It didn't work! He successfully protected usersData endpoint |
+| Images | <img src="users.png" width="1000"><br>description. |
+| Corrections | No need |
+
+### Attack 4
+
+| Item | Result |
+| :--- | :--- |
+| Date | April 11, 2026 |
+| Target | Registration Breaking |
+| Classification | Error handling while registering |
+| Severity | 3 |
+| Description | When sending invalid JSON, the server returns a full error message with a with multiple files locations
+| Images | <img src="json.png" width="1000"><br>Server response showing stack trace and error message. |
+| Corrections | There needs to be an error handler to hide this information|
+
+
+
+### Attack 5
+
+| Item | Result |
+| :--- | :--- |
+| Date | April 11, 2026 |
+| Target | Pizza ordering |
+| Classification | Too much data |
+| Severity | 4 |
+| Description | The website took forever to handle the request, crashed, and didn't register the order as valid. When you go to the order history you will see that the order was purchased, possibly making customers get ghost charges. |
+| Images | <img src="image-url.png" width="250"><br>description. |
+| Corrections | I don't have the picture for this one, and I can't recreate it, since I don't have access to his account. While he was testing he deleted franchises, so I cant show it. |
 
 ## Combined Summary of Learnings
 
